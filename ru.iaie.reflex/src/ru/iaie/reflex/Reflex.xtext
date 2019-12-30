@@ -1,0 +1,96 @@
+grammar ru.iaie.reflex.Reflex with org.eclipse.xtext.common.Terminals
+
+generate reflex "http://www.iaie.ru/reflex/Reflex"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Program:
+	"program" name=ID "{"
+		(ticks?=Tact)? 
+		consts+=Const*
+		enums+=Enum*
+		functions+=Function*
+		registers+=Register*
+		processes+=Process*
+	"}"
+;
+
+Process:
+	"proc" name=ID "{"
+		states+=State*
+	"}"
+;
+
+State:
+	"state" name=ID "{"
+	
+	"}"
+;
+
+Function:
+	returnType=CType name=ID "("argTypes+=CType ("," argTypes+=CType)*")" ";"
+;	
+
+
+enum RegisterType:
+	INPUT='input' | OUTPUT='output'
+;
+
+Register:
+	type=RegisterType name=ID addr1=INT addr2=INT regSize=REG_SIZE
+;
+
+Const:
+	"const" constId=ID constValue=Expression ";"
+;	
+
+Enum:
+	"enum" enumMembers+=EnumMember (',' enumMembers+=EnumMember)*
+;
+
+EnumMember:
+	name=ID "=" value=Expression
+;
+
+Expression:
+	"expr"
+;
+
+CType:
+	{CType} VOID_C_TYPE | {CType} FLOAT_C_TYPE | {CType} DOUBLE_C_TYPE |
+	 {CType} (signSpec?=CTypeSignSpec)? (SHORT_C_TYPE | INT_C_TYPE | LONG_C_TYPE)
+;
+
+enum CTypeSignSpec:
+	SIGNED="signed" | UNSIGNED="unsigned"
+;
+
+terminal VOID_C_TYPE:
+	"void"
+;
+terminal FLOAT_C_TYPE:
+	"float"
+;
+terminal DOUBLE_C_TYPE:
+	"double"
+;
+terminal SHORT_C_TYPE:
+	"short"
+;
+terminal INT_C_TYPE:
+	"int"
+;
+terminal LONG_C_TYPE:
+	"long"
+;
+
+Time:
+	"time"
+;
+
+	
+terminal Tact:
+	"tact"
+;
+
+terminal REG_SIZE returns ecore::EInt : ("8" | "16");
